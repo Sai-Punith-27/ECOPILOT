@@ -1,0 +1,17 @@
+# EcoPilot .gitignore
+# No root .gitignore existed before this file was added -- this is purely
+# additive and doesn't remove or change any tracked file.
+
+**/venv/
+**/__pycache__/
+**/*.pyc
+**/*.db
+**/.pytest_cache/
+.env
+*.env
+
+# Raw ML training dataset (~12MB CSV). Not committed -- see
+# ai-optimizers/ml/data/README.md for the one-line download command.
+# The trained model artifacts (ai-optimizers/ml/artifacts/) ARE committed,
+# since they're small and needed at runtime by the backend.
+ai-optimizers/ml/data/*.csv

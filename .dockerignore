@@ -1,0 +1,13 @@
+**/venv/
+**/__pycache__/
+**/*.pyc
+**/*.db
+.git/
+.gitignore
+**/.pytest_cache/
+
+# Raw ML training dataset: large-ish, not needed at runtime (only train.py
+# needs it, and that's run offline/locally, not inside the deployed image).
+# The trained artifacts (model.joblib, metrics.json) ARE needed and are NOT
+# excluded here.
+ai-optimizers/ml/data/*.csv

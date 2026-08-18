@@ -1,0 +1,66 @@
+{
+  "model_version": "ecopilot-energy-predictor-v1",
+  "trained_at_utc": "2026-08-18T02:14:35.378615+00:00",
+  "selected_model": "linear_regression",
+  "feature_columns": [
+    "T_indoor_avg",
+    "RH_indoor_avg",
+    "T_out",
+    "RH_out",
+    "hour",
+    "dayofweek",
+    "appliances_lag_1"
+  ],
+  "target_column": "Appliances",
+  "dataset": "UCI Appliances Energy Prediction (Candanedo et al.), single Belgian household, Jan-May 2016",
+  "split": {
+    "train_frac": 0.7,
+    "val_frac": 0.15,
+    "test_frac": 0.15,
+    "method": "chronological"
+  },
+  "naive_baseline_metrics": {
+    "val": {
+      "rmse": 92.39428817384207,
+      "mae": 53.967763314929236,
+      "r2": -0.0033677620290730736
+    },
+    "test": {
+      "rmse": 90.89214107076238,
+      "mae": 52.82851579485583,
+      "r2": -0.0004137504655223889
+    }
+  },
+  "candidate_metrics": {
+    "linear_regression": {
+      "val": {
+        "rmse": 62.06601488833761,
+        "mae": 28.037219632690597,
+        "r2": 0.5472300265476917
+      },
+      "test": {
+        "rmse": 62.21392811300833,
+        "mae": 28.527865800490204,
+        "r2": 0.5312921461911416
+      }
+    },
+    "random_forest": {
+      "val": {
+        "rmse": 63.95959852499558,
+        "mae": 31.372728558370394,
+        "r2": 0.5191812961994831
+      },
+      "test": {
+        "rmse": 71.79078958306249,
+        "mae": 42.1975353891693,
+        "r2": 0.37588525305665865
+      }
+    }
+  },
+  "selected_model_test_metrics": {
+    "rmse": 62.21392811300833,
+    "mae": 28.527865800490204,
+    "r2": 0.5312921461911416
+  },
+  "disclaimer": "This model predicts whole-household appliance energy (Wh), not per-appliance energy, and was trained on a single Belgian home. It is not validated for Indian households or Indian climate conditions. Treat predictions as an approximate trend signal, not ground truth."
+}
