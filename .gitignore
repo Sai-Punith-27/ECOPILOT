@@ -15,3 +15,4 @@
 # The trained model artifacts (ai-optimizers/ml/artifacts/) ARE committed,
 # since they're small and needed at runtime by the backend.
 ai-optimizers/ml/data/*.csv
+backend/.venv/

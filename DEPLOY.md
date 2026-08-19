@@ -19,7 +19,7 @@ ever needs; the backend and simulator run invisibly behind it.
 ```
  Render (background worker)        Render (web service)         Streamlit Community Cloud
  backend/simulator/Dockerfile  →   backend/backend/Dockerfile → frontend/app.py
- posts telemetry every 2s          FastAPI + SQLite +           reads BACKEND_BASE_URL
+ posts telemetry every 15s         FastAPI + SQLite +           reads BACKEND_BASE_URL
                                     ML prediction (/api/predict) from st.secrets
                                     ↑ BACKEND_BASE_URL not
                                       needed here (simulator
@@ -111,7 +111,7 @@ before a demo (see Step 1).
 
 - Open the Streamlit URL. Sidebar should show "🔌 Backend Connection: connected."
 - Live Dashboard tab should show live-updating readings within a couple of
-  poll cycles (simulator posts every 2s).
+  poll cycles (simulator posts every 15s).
 - Switch to **⚙️ Technical View** — the "🤖 ML Energy Prediction" section
   should show a predicted Wh figure with an RMSE caption for AC and Cooler.
   If it instead shows "Prediction unavailable," check the Render backend's
@@ -132,7 +132,7 @@ backend off the free tier to avoid cold-start sleep during judging.
 Three containers, one `docker-compose.yml`:
 
 - **backend** — FastAPI + SQLite + ML prediction, on port 8000
-- **simulator** — posts fake telemetry to the backend every 2s, no exposed port
+- **simulator** — posts fake telemetry to the backend every 15s, no exposed port
 - **frontend** — Streamlit dashboard, on port 8501
 
 ## What changed from your local setup

@@ -65,7 +65,8 @@ from backend_client import (
 from weather_client import get_outside_conditions, DEFAULT_LAT, DEFAULT_LON
 from tariff import get_current_slot, washing_machine_schedule_advice
 from vision_diagnostics import ANALYZERS
-from consumer_view import render_consumer_view
+from consumer_view import render_consumer_view, render_smart_recommendations
+from energy_recommendations import build_energy_recommendations
 
 from household_optimizer import optimize_household
 from fridge_anomaly_detector import detect_anomaly
@@ -271,7 +272,7 @@ def render_trend_charts():
             st.plotly_chart(fig, use_container_width=True, key=f"trend_{aid}_{len(series)}")
 
 
-def render_snapshot(household_report, fridge_anomaly, raw_readings, outside_temp, outside_humidity, weather_source, dryrun_info, ml_predictions=None):
+def render_snapshot(household_report, fridge_anomaly, raw_readings, outside_temp, outside_humidity, weather_source, dryrun_info, ml_predictions=None, smart_report=None):
     st.caption(f"🌤️ Outside conditions: {outside_temp:.1f}°C"
                + (f", {outside_humidity:.0f}% RH" if outside_humidity is not None else "")
                + f"  ·  _{weather_source}_")
@@ -314,6 +315,8 @@ def render_snapshot(household_report, fridge_anomaly, raw_readings, outside_temp
                 else:
                     st.caption(f"⚠️ Prediction unavailable — {pred.get('error') or 'unknown reason'}. "
                                "Deterministic recommendations below are unaffected.")
+
+    render_smart_recommendations(smart_report)
 
     if fridge_anomaly["status"] == "WARNING":
         st.error(f"⚠️ **Fridge anomaly detected** (score {fridge_anomaly['anomaly_score']:.0f}/100) — {fridge_anomaly['recommendation']}")
@@ -380,14 +383,18 @@ with tab_dash:
         outside_temp, outside_humidity, weather_source = get_outside_conditions(lat, lon)
         household_report, fridge_anomaly, raw_readings, dryrun_info = map_and_optimize(latest, outside_temp, outside_humidity)
         ml_predictions = fetch_ml_predictions(base_url)
+        smart_report = build_energy_recommendations(
+            raw_readings, household_report, fridge_anomaly, dryrun_info, ml_predictions
+        )
         washer_advice = washing_machine_schedule_advice(raw_readings["washer"].get("cycle"))
 
         st.caption(f"🔴 Live — updates every {poll_interval}s")
         if is_simple:
             render_consumer_view(household_report, fridge_anomaly, raw_readings, outside_temp,
-                                  weather_source, dryrun_info, washer_advice)
+                                  weather_source, dryrun_info, washer_advice, smart_report)
         else:
-            render_snapshot(household_report, fridge_anomaly, raw_readings, outside_temp, outside_humidity, weather_source, dryrun_info, ml_predictions)
+            render_snapshot(household_report, fridge_anomaly, raw_readings, outside_temp, outside_humidity,
+                            weather_source, dryrun_info, ml_predictions, smart_report)
 
     live_dashboard_fragment()
 

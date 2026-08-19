@@ -9,7 +9,7 @@ comfort, performance, and safety constraints.
 
 ```
 IoT/Simulator (backend/simulator)
-        │  POST /api/telemetry every ~2s
+        │  POST /api/telemetry every ~15s
         ▼
 FastAPI backend (backend/backend) ── SQLite
         │

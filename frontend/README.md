@@ -27,7 +27,7 @@ pip install -r requirements.txt
 python main.py
 ```
 Leave both running. You should see `[OK] Telemetry sent successfully` printing
-every ~2 seconds in Terminal 2.
+every ~15 seconds in Terminal 2.
 
 ## Run the frontend
 

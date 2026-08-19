@@ -18,6 +18,7 @@ import streamlit as st
 APPLIANCE_ICON = {"ac": "❄️", "refrigerator": "🧊", "washing_machine": "🧺", "cooler": "🌀"}
 APPLIANCE_FRIENDLY_NAME = {"ac": "Air Conditioner", "refrigerator": "Refrigerator",
                            "washing_machine": "Washing Machine", "cooler": "Desert Cooler"}
+PRIORITY_ICON = {"High": "🔴", "Medium": "🟡", "Low": "🟢"}
 
 
 def _score_label(score):
@@ -40,8 +41,39 @@ def _simplify_recommendation(rec):
     return text
 
 
+def render_smart_recommendations(smart_report):
+    """Render the shared smart opportunity report in either dashboard view."""
+    if not smart_report:
+        return
+
+    summary = smart_report.get("summary", {})
+    recommendations = smart_report.get("recommendations", [])
+    st.subheader("⚡ Smart Energy Saving Recommendations")
+    st.markdown("### Energy Saving Opportunities")
+
+    metric_cols = st.columns(4)
+    metric_cols[0].metric("Actionable opportunities", summary.get("opportunity_count", 0))
+    metric_cols[1].metric("High priority", summary.get("high_priority_count", 0))
+    metric_cols[2].metric("Medium priority", summary.get("medium_priority_count", 0))
+    estimated = summary.get("estimated_energy_saving_kwh")
+    metric_cols[3].metric("Modeled energy impact", f"~{estimated:.3f} kWh" if estimated is not None else "Qualitative")
+    st.caption(summary.get("estimated_saving_note", "Impact estimates are advisory."))
+    if summary.get("ml_context"):
+        st.caption(f"🤖 {summary['ml_context']}")
+
+    for recommendation in recommendations:
+        appliance = recommendation.get("appliance", "appliance")
+        name = recommendation.get("appliance_name", APPLIANCE_FRIENDLY_NAME.get(appliance, appliance.title()))
+        priority = recommendation.get("priority", "Low")
+        icon = APPLIANCE_ICON.get(appliance, "🔌")
+        with st.expander(f"{PRIORITY_ICON.get(priority, '⚪')} {icon} {name} — {priority} priority", expanded=priority == "High"):
+            st.markdown(f"**Current observation:** {recommendation.get('observation', 'No observation available.')}")
+            st.markdown(f"**Recommended action:** {recommendation.get('action', 'No action available.')}")
+            st.markdown(f"**Estimated energy-saving impact:** {recommendation.get('impact', 'Qualitative only.')}")
+
+
 def render_consumer_view(household_report, fridge_anomaly, raw_readings, outside_temp,
-                          weather_source, dryrun_info, washer_advice):
+                          weather_source, dryrun_info, washer_advice, smart_report=None):
     e = household_report["energy"]
     w = household_report["water"]
     cst = household_report["cost"]
@@ -89,6 +121,8 @@ def render_consumer_view(household_report, fridge_anomaly, raw_readings, outside
         st.info(f"🧺 **Tip:** electricity is a bit more expensive right now — "
                 f"if your laundry can wait, running it later tonight could cost less.")
 
+    st.divider()
+    render_smart_recommendations(smart_report)
     st.divider()
 
     # ---- Per-appliance friendly cards ----
